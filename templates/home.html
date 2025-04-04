@@ -240,6 +240,55 @@
             }
         }
 
+        .section1, .section2, .section3 {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3%;
+            padding-top: 3%; 
+        }
+        .section3 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-top: 3%;
+            padding-top: 3%;
+            font-family: cursive;
+        }
+
+        .title {
+            font-size: x-large;
+            margin-bottom: 20px;
+        }
+
+        .team-members {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .member {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #4e4848d0;
+            font-size: large;
+            min-width: 150px;
+            text-align: center;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .member img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 2px solid #ccc;
+        }
     </style>
 <body>
     <div class="start">
@@ -266,49 +315,59 @@
                 <h1>Manage Your <span class="auto-type">Finances Smarter</span></h1>
             </section>
         </div>
-        <p>
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Minima cum vel quaerat 
-            architecto tenetur rerum, voluptas doloremque explicabo eius provident delectus alias enim 
-            voluptatem, cumque asperiores! Quibusdam modi dolore vero accusamus iusto praesentium 
-            possimus quidem ipsa totam corrupti, eveniet sit, voluptate, nam cum optio harum ipsam 
-            laboriosam animi cupiditate. Ipsum quidem neque repellendus officiis blanditiis tempora 
-            rem, eum quasi aliquam nobis ipsa iste ullam libero incidunt dicta sit adipisci dolorem, 
-            facilis delectus earum numquam excepturi autem voluptas pariatur! Magnam, rerum quas, earum 
-            vero ducimus non a et qui sint id placeat asperiores illum fugiat assumenda iste sunt est 
-            aliquid magni inventore corporis, odio eos voluptate perspiciatis recusandae. Neque quaerat 
-            nesciunt eligendi culpa architecto necessitatibus, porro ducimus laudantium maiores quo? Vel
-            quod iusto sunt maiores iure minima cumque repudiandae a accusamus nostrum officia laborum 
-            autem, quo deserunt eos eum consectetur fugiat dignissimos at aperiam obcaecati tempore 
-            animi consequatur? Eos odit, officia quasi architecto velit provident eveniet. Quas illo 
-            quod porro est delectus dolorem consequuntur quisquam ipsam magnam vitae. Itaque, sapiente 
-            quaerat. Esse saepe vero laudantium dolore ad earum assumenda porro hic? Totam unde 
-            laboriosam vitae voluptates vel commodi, atque repellat nihil molestias saepe eveniet, 
-            pariatur corporis hic magnam blanditiis molestiae modi? Mollitia vero laudantium natus 
-            quae iure maxime praesentium tempore necessitatibus ex harum aliquam quisquam vel beatae 
-            eius nulla repudiandae amet, aspernatur deleniti cum non eum omnis fugiat iusto. Voluptate 
-            rerum modi quod in fugit quos non ullam voluptatum tempore possimus consectetur sit nisi 
-            neque impedit explicabo, ducimus architecto delectus corrupti exercitationem illo. Dicta 
-            ullam dolorum voluptatibus assumenda sequi ex quia nesciunt nihil quo. Molestiae 
-            reprehenderit nisi, doloremque pariatur hic, amet corrupti reiciendis mollitia nobis at rem
-            dicta quisquam laborum nostrum quia. Voluptas accusamus ducimus nostrum, quos voluptatum 
-            repudiandae modi aut harum odio molestias placeat dolor quidem repellat alias. Cupiditate 
-            asperiores molestiae dignissimos dicta rem dolorem aperiam aliquam in ab adipisci. Aperiam
-            officiis aspernatur voluptatibus repudiandae et praesentium saepe ullam explicabo, minus 
-            vel itaque dolorem amet eaque earum quas laborum laboriosam fugit? Praesentium enim 
-            nostrum quidem dignissimos cupiditate repudiandae libero amet voluptatibus consequuntur 
-            nisi recusandae magni eos architecto cum beatae vitae numquam sint commodi, rem corrupti 
-            inventore dicta? Deleniti asperiores impedit nisi quia odit aliquid distinctio tempora. 
-            Inventore alias, veritatis, omnis vel laboriosam sed libero minima doloremque maiores 
-            dolor esse facilis corporis quaerat quo enim quasi quod nam adipisci cum aspernatur quas 
-            consectetur dolorem sequi. Facilis repellat, neque similique inventore debitis quae totam. 
-            Pariatur quas accusantium aspernatur fugit et? Rem, facilis iure amet, labore consequuntur unde 
-            numquam animi laudantium praesentium aperiam necessitatibus enim dolores quos dolorum dicta exercitationem 
-            et eum voluptatibus. Provident esse beatae modi! Quidem ex a totam nihil culpa, natus animi sint mollitia? Cum
-            eligendi nostrum ut, rerum, dolor voluptatibus iusto neque impedit pariatur quae debitis, et minima animi
-            quisquam. Eveniet, amet magni vero et repellat maiores, est fuga veritatis corporis ullam ex! Eius libero amet 
-            aliquid cumque, eaque facere eveniet nam sunt labore dolorem? Sequi unde nobis fugiat dolorem atque et illo tempore 
-            obcaecati, maiores repellendus necessitatibus! Asperiores.
-        </p>
+        <div class="section1">
+            <div class="ele1" style="max-width: 50%; margin-left: 5%; font-family: cursive;">
+                <p>WHO ARE WE?</p>
+                <span>
+                    We are a team of passionate individuals dedicated to revolutionizing the way you manage your finances. 
+                    Our mission is to provide innovative tools and insights that empower you to make smarter financial decisions, 
+                    achieve your goals, and secure a brighter future.
+                </span>
+            </div>
+            <div class="ele2" style="margin-right: 10%;">
+                <img src="{% static 'images/1.png' %}" alt="pic 1" style="width: auto; max-height: 40vh; background-color: var(--bg-color); transition: background-color 0.5s;">
+            </div>
+        </div>
+        <div class="section2">
+            <div class="ele1" style="margin-left: 5%;">
+                <img src="{% static 'images/2.png' %}" alt="pic 1" style="width: auto; max-height: 40vh; background-color: var(--bg-color); transition: background-color 0.5s;">
+            </div>
+            <div class="ele2" style="max-width: 50%; margin-right: 5%; font-family: cursive;">
+                <p>HOW WE ARE DIFFERENT?</p>
+                <span>
+                    Our platform stands out by offering personalized financial insights, advanced analytics, 
+                    and user-friendly tools. We prioritize your financial well-being by ensuring data security, 
+                    providing actionable recommendations, and fostering a seamless user experience tailored 
+                    to your unique needs.<br><br>
+                    Additionally, we provide features like automatic transaction fetching directly from your 
+                    bank statements and UPI login integration to seamlessly fetch and categorize your transactions. 
+                    Our AI-powered suggestions help you make smarter investment decisions by analyzing your spending 
+                    patterns, financial goals, and market trends. With our platform, you can stay ahead in managing 
+                    your finances efficiently and effectively.
+                </span>
+            </div>
+        </div>
+        <div class="section3">
+            <div class="title">Our Team</div>
+            <div class="team-members">
+                <div class="member">
+                    <img src="ravi.jpg" alt="Ravi Kumar Gupta">
+                    <div>Ravi Kumar Gupta</div>
+                </div>
+                <div class="member">
+                    <img src="ijharul.jpg" alt="Ijharul  ">
+                    <div>Ijaruhl </div>
+                </div>
+                <div class="member">
+                    <img src="mrigank.jpg" alt="Harsh Mrigank">
+                    <div>Harsh Mrigank</div>
+                </div>
+                <div class="member">
+                    <img src="harshit.jpg" alt="Harshit Kumar">
+                    <div>Harshit Kumar</div>
+                </div>
+            </div>
+        </div>    
     </main>
 
     <footer style="background-color: black;">
