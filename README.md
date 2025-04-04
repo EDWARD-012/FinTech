@@ -70,5 +70,3 @@ This project is licensed under the MIT License.
 ---
 **Maintained by**: [Ravi Kumar Gupta](https://github.com/EDWARD-012)
 ```
-
-Now, just **copy and paste** this into a `README.md` file in your project and commit it! 🚀
