@@ -1,0 +1,128 @@
+{% csrf_token %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="64x64" href="/static/images/icon.png">
+    <title>Budget Analysis Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-3d"></script> <!-- For 3D pie chart -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .chart-container {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .details {
+            background-color: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Budget Analysis Results</h1>
+
+        <div class="chart-container">
+            <canvas id="expenseChart"></canvas>
+        </div>
+
+        <div class="details">
+            <h2>Expense Breakdown</h2>
+            <ul id="expenseList"></ul>
+
+            <h2>Savings Suggestion</h2>
+            <p>You can save approximately <span id="savingsAmount">₹X,XXX</span> per month by reducing unnecessary expenses.</p>
+
+            <h2>Investment Options</h2>
+            <p>Based on your savings, consider investing in:</p>
+            <ul>
+                <li>Top Gainers on Groww: <span id="growwGainers">Stock A, Stock B</span></li>
+                <li>Gold Price (Current): <span id="goldPrice">₹X,XXX per gram</span></li>
+                <li>Mutual Funds: <span id="mutualFunds">Fund A, Fund B</span></li>
+            </ul>
+
+            <button onclick="sendPDF()">Send Detailed PDF to Email</button>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for the pie chart
+        const ctx = document.getElementById('expenseChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Food', 'Rent', 'Entertainment', 'Utilities', 'Others'],
+                datasets: [{
+                    data: [30, 25, 15, 20, 10],
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Expense Distribution'
+                    }
+                },
+                rotation: -0.7 // For 3D effect
+            }
+        });
+
+        // Sample data for details
+        document.getElementById('expenseList').innerHTML = `
+            <li>Food: ₹3,000 (30%)</li>
+            <li>Rent: ₹2,500 (25%)</li>
+            <li>Entertainment: ₹1,500 (15%)</li>
+            <li>Utilities: ₹2,000 (20%)</li>
+            <li>Others: ₹1,000 (10%)</li>
+        `;
+
+        document.getElementById('savingsAmount').textContent = '₹5,000';
+        document.getElementById('growwGainers').textContent = 'Tech Corp, Finance Ltd';
+        document.getElementById('goldPrice').textContent = '₹6,200 per gram';
+        document.getElementById('mutualFunds').textContent = 'Growth Fund, Equity Fund';
+
+        function sendPDF() {
+            alert("PDF report sent to your email with detailed analysis!");
+            // Add logic here to generate and send PDF
+        }
+    </script>
+</body>
+</html>

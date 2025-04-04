@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="64x64" href="/static/images/icon.png">
+    <title>Smart Budgeting App</title>
+    <style>
+        :root {
+            /* Light Theme (Default) */
+            --background: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --header-bg: #2c3e50;
+            --button-bg: #3498db;
+            --button-hover: #2980b9;
+            --shadow: 0 2px 5px rgba(0,0,0,0.1);
+            --border-color: #ddd;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Theme */
+            --background: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-color: #fff;
+            --header-bg: #838c97;
+            --button-bg: #4a90e2;
+            --button-hover: #357abd;
+            --shadow: 0 2px 5px rgba(169, 167, 167, 0.3);
+            --border-color: #444;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 1rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 8rem;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 1rem;
+            right: 2rem;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .container {
+            margin-top: 80px;
+            padding: 20px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .section h2 {
+            color: var(--header-bg);
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .expense-form, .transaction-fetch {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        input, button, select {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        button {
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover:not(#checkResultsBtn:hover) {
+            background-color: var(--button-hover);
+        }
+
+        #checkResultsBtn {
+            background-color: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        #checkResultsBtn:hover {
+            background-color: #7f8c8d;
+        }
+
+        .gateway-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin-top: 60px;
+                padding: 10px;
+            }
+
+            header {
+                padding: 0.5rem;
+            }
+
+            .logout-btn, .theme-toggle {
+                top: 0.5rem;
+                right: 1rem;
+                padding: 0.3rem 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .section {
+                padding: 15px;
+            }
+
+            .gateway-options {
+                grid-template-columns: 1fr;
+            }
+
+            input, button, select {
+                padding: 8px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.2rem;
+            }
+
+            .section h2 {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Smart Budgeting App</h1>
+        <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </header>
+
+    <div class="container">
+        <div class="section">
+            <h2>Add Expense</h2>
+            <form id="expenseForm" class="expense-form">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <input type="text" name="category" placeholder="Expense Category (e.g., Food, Rent)" required>
+                <input type="number" name="amount" placeholder="Amount (in INR)" step="0.01" required>
+                <input type="date" name="date" required>
+                <button type="submit">Add Expense</button>
+            </form>
+        </div>
+
+        <div class="section">
+            <h2>Fetch Transactions</h2>
+            <div class="transaction-fetch">
+                <select id="gatewaySelect" required>
+                    <option value="">Select Payment Gateway</option>
+                    <option value="paytm">Paytm</option>
+                    <option value="razorpay">Razorpay</option>
+                    <option value="sbi">SBI</option>
+                    <option value="phonepe">PhonePe</option>
+                    <option value="gpay">Google Pay</option>
+                    <option value="idfc">IDFC Bank</option>
+                    <option value="axis">Axis Bank</option>
+                </select>
+                <div class="gateway-options">
+                    <button id="paytmLoginBtn" style="display: none;" onclick="initiatePaytmOtp()">Login to Paytm</button>
+                    <button onclick="fetchTransactions()">Fetch Transactions</button>
+                </div>
+                <p>Connect your preferred payment gateway or bank to fetch recent transactions automatically.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <button id="checkResultsBtn" disabled>Check Results</button>
+        </div>
+    </div>
+
+    <script>
+
+        function fetchRecentTransactions() {
+            fetch('/api/recent-transactions/', {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Recent transactions fetched: ' + JSON.stringify(data.transactions));
+                    document.getElementById('checkResultsBtn').disabled = false;
+                    document.getElementById('checkResultsBtn').style.backgroundColor = '#3498db';
+                    document.getElementById('checkResultsBtn').style.cursor = 'pointer';
+                } else {
+                    alert('Error fetching recent transactions: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error fetching recent transactions: ' + error.message);
+                console.error('Fetch error:', error);
+            });
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+            }
+        }
+
+        function logout() {
+            window.location.href = '/login/';
+        }
+
+        function fetchTransactions() {
+            const selectedGateway = document.getElementById('gatewaySelect').value;
+            const paytmLoginBtn = document.getElementById('paytmLoginBtn');
+
+            if (!selectedGateway) {
+                alert('Please select a payment gateway.');
+                return;
+            }
+
+            if (selectedGateway === 'paytm') {
+                paytmLoginBtn.style.display = 'block'; // Show Paytm login button
+            } else {
+                alert(`Fetching transactions from ${selectedGateway}. This feature will enable the 'Check Results' button once data is available.`);
+                document.getElementById('checkResultsBtn').disabled = false;
+                document.getElementById('checkResultsBtn').style.backgroundColor = '#3498db';
+                document.getElementById('checkResultsBtn').style.cursor = 'pointer';
+                fetchRecentTransactions(); // Fetch transactions for other gateways
+            }
+        }
+
+        function initiatePaytmOtp() {
+            const mobileNumber = prompt('Enter your Paytm registered mobile number:');
+            if (mobileNumber) {
+                fetch('/api/send-paytm-otp/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({ mobile: mobileNumber })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const otp = prompt('Enter the OTP sent to your mobile:');
+                        verifyPaytmOtp(mobileNumber, otp);
+                    } else {
+                        alert('Error sending OTP: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('Error initiating OTP: ' + error);
+                });
+            }
+        }
+
+        function verifyPaytmOtp(mobile, otp) {
+            fetch('/api/verify-paytm-otp/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({ mobile: mobile, otp: otp })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Paytm login successful. Fetching transactions...');
+                    fetchPaytmTransactions(data.accessToken);
+                } else {
+                    alert('Error verifying OTP: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error verifying OTP: ' + error);
+            });
+        }
+
+        function fetchPaytmTransactions(accessToken) {
+            fetch('/api/recent-transactions/', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken,
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Transactions fetched successfully: ' + JSON.stringify(data.transactions));
+                    document.getElementById('checkResultsBtn').disabled = false;
+                    document.getElementById('checkResultsBtn').style.backgroundColor = '#3498db';
+                    document.getElementById('checkResultsBtn').style.cursor = 'pointer';
+                } else {
+                    alert('Error fetching transactions: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error fetching transactions: ' + error);
+            });
+        }
+
+        function fetchRecentTransactions() {
+            fetch('/api/recent-transactions/', {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Recent transactions fetched: ' + JSON.stringify(data.transactions));
+                } else {
+                    alert('Error fetching recent transactions: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error fetching recent transactions: ' + error);
+            });
+        }
+
+        document.getElementById('expenseForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(this);
+            fetch('/api/add-expense/', { // Changed to include trailing slash
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                credentials: 'same-origin' // Ensures cookies (CSRF token) are sent
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Expense added successfully!');
+                    this.reset(); // Clear the form
+                    document.getElementById('checkResultsBtn').disabled = false;
+                    document.getElementById('checkResultsBtn').style.backgroundColor = '#3498db';
+                    document.getElementById('checkResultsBtn').style.cursor = 'pointer';
+                    fetchRecentTransactions(); // Update recent transactions
+                } else {
+                    alert('Error adding expense: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error submitting expense: ' + error);
+            });
+        });
+
+        document.getElementById('checkResultsBtn').addEventListener('click', function() {
+            if (!this.disabled) {
+                window.location.href = '/results/';
+            }
+        });
+
+        // Call on page load to check for Paytm callback
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const authCode = urlParams.get('code');
+
+            if (authCode) {
+                fetch('/api/exchange-paytm-token/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({ authCode: authCode })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Paytm login successful via mobile/OTP. Fetching transactions...');
+                        fetchPaytmTransactions(data.accessToken);
+                    } else {
+                        alert('Error logging in to Paytm: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('Error during Paytm login: ' + error);
+                });
+            }
+            fetchRecentTransactions(); // Load recent transactions on page load
+        };
+    </script>
+</body>
+</html>

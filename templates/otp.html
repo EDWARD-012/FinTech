@@ -1,0 +1,174 @@
+{% csrf_token %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="64x64" href="/static/images/icon.png">
+    <title>OTP Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .otp-container {
+            
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            text-align: center;
+            width: 80%;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #218838;
+        }
+        #timer {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+            display: block;
+        }
+        #resendBtn {
+            display: none;
+            background: #007bff;
+            margin-top: 10px;
+        }
+        #resendBtn:hover {
+            background: #0056b3;
+        }
+        #attempts {
+            font-size: 14px;
+            color: #dc3545;
+            margin-top: 10px;
+        }
+        @media (max-width: 600px) {
+            .otp-container {
+                padding: 15px;
+            }
+            input {
+                font-size: 14px;
+                padding: 8px;
+            }
+            button, #resendBtn {
+                font-size: 14px;
+                padding: 8px;
+            }
+            #timer, #attempts {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="otp-container">
+        <h2>Enter OTP</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="otp" id="otp" maxlength="6" placeholder="Enter OTP">
+            <br>
+            <button type="submit">Verify</button>
+        </form>
+        <div id="timer">Time remaining: <span id="time">10:00</span></div>
+        <button id="resendBtn" onclick="resendOTP()">Resend OTP</button>
+        <div id="attempts">Attempts remaining: {{ attempts_left }}</div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    
+        const csrftoken = getCookie('csrftoken');
+
+        document.addEventListener('DOMContentLoaded', function() {
+            let timeLeft = 600; // 10 minutes in seconds
+            const timerDisplay = document.getElementById("time");
+            const resendBtn = document.getElementById("resendBtn");
+            let timer;
+
+            // Start timer
+            startTimer();
+
+            function startTimer() {
+                timer = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        const minutes = Math.floor(timeLeft / 60);
+                        const seconds = timeLeft % 60;
+                        timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                    } else {
+                        clearInterval(timer);
+                        timerDisplay.textContent = "0:00";
+                        resendBtn.style.display = "block"; // Show resend button
+                    }
+                }, 1000);
+            }
+        });
+
+    
+        function resendOTP() {
+            fetch('/resend-otp/', {  // Create a view for resending OTP
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({ email: "{{ request.session.email }}" })  // Adjust as needed
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("New OTP has been sent!");
+                timeLeft = 600; // Reset timer
+                timerDisplay.textContent = "10:00";
+                resendBtn.style.display = "none"; // Hide resend button
+                startTimer(); // Restart timer
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,414 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="64x64" href="/static/images/icon.png">
+    <title>Smart Budgeting App</title>
+    <style>
+        *{
+            margin: 0%;
+            padding: 0%;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: white;
+            --text-color: black;
+        }
+        [data-theme="dark"] {
+            --bg-color: black;
+            --text-color: white;
+        }
+
+        [data-theme="dark"] .footer {
+            background-color: black !important;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-color);
+            color: var(--text-color);
+            transition: background 0.5s, color 0.5s;
+        }
+
+        main {
+            margin-top: 10vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; 
+            color: var(--text-color) !important; /* Force color update */
+        }
+
+        main p {
+            color: var(--text-color) !important; /* Ensure text follows theme */
+        }
+
+        .navbar {
+            height: 10vh;
+            width: 100vw;
+            background-color: rgba(0, 0, 0, 0.736);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;    
+            z-index: 1000;
+            transition: padding 0.5s;
+            animation: nav 5s ease-out;
+        }
+
+        @keyframes nav {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .navbar img{
+            height: 100px;
+            width: 100px;
+            border-radius: 100%;
+            margin-right: 30%;
+            margin-left: auto;
+        }
+
+        .navbar a,p{
+            text-decoration: none;
+            color: azure;
+            margin: 5%;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            font-size: x-large;
+        }
+
+        .navbar p{
+            margin-right: auto;   
+        }
+
+        @media (max-width: 500px) {
+            .navbar a, .navbar p, .footer {
+                font-size: medium; /* Decrease text size */
+            }
+            .navbar img{
+                margin-right: 20%;
+            }
+        }
+
+         @media (max-width: 400px) {
+            .navbar a, .navbar p, .footer {
+                font-size: small; /* Decrease text size */
+            }
+        }
+
+        .start{
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            animation: logoFadeOut 2s forwards 2.5s;
+        }
+
+        .start img{
+            width: 150px;
+            animation: logoMove 2s forwards;
+        }
+
+        @keyframes logoMove {
+            0% { transform: scale(1.5); top: 50%; left: 50%; width: 120px; height: 120px; }
+            100% { position: fixed; top: 0%; left: 0%; width: 100px; height: 100px; transform: scale(1); }
+        }
+
+        @keyframes logoFadeOut {
+            to { opacity: 0; visibility: hidden; }
+        } 
+        
+        .floating-logo {
+            position: fixed;
+            bottom: 10%;
+            right: 10%;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: grab; /* Shows it's draggable */
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .floating-logo:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        .floating-logo:hover {
+            transform: scale(1.1);
+        }
+
+        .floating-logo img {
+            width: 35px;
+            height: 35px;
+        }
+
+       .footer {
+            height: 10vh;
+            width: 100vw;
+            background-color: black !important;
+            opacity: 1 !important;
+            backdrop-filter: none !important;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            bottom: 0;
+            z-index: 1000;
+            color: azure;
+            font-family: 'Trebuchet MS', Arial, sans-serif;
+            font-weight: 300;
+            font-size: medium;
+            margin-top: auto;
+            animation: foot 10s ease-out;
+            margin-left: auto;
+            margin-right: auto;
+            gap: 0;
+            padding: 0;
+        }
+
+        @keyframes foot {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .animate-logo {
+            transform: rotate(360deg) scale(1.2);
+        }
+
+        /* Typing animation */
+        .typing-animation {
+            border-right: 2px solid;
+            white-space: nowrap; /* Prevent text from wrapping */
+            overflow: hidden; /* Hide the text that is not yet typed */
+            animation: typing 4s steps(30, end), blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: black; } /* Change to the color of your text */
+        }
+
+        /* Add a spacer to push the footer down */
+        .content {
+            flex: 1; /* Allow this section to grow and fill available space */
+            padding-bottom: 80px; /* Space for the footer */
+            margin-left: 5%;
+        }
+
+        .con1{width: 30vw;}
+        .con2{width: 10vw;}
+
+        @media (max-width: 950px) {
+            .con2{
+                width: 50vw;
+            }
+            .con1{
+                width: 50vw;
+            }
+
+            .content h1{
+                font-size: 80%;
+            }
+        }
+
+    </style>
+<body>
+    <div class="start">
+        <img src="/static/images/logo-bg.png" alt="logo-start.png">
+    </div>
+    <div class="navbar">
+        <div class="con2">
+            <img src="/static/images/logo-bg.png" alt="logo.png">
+        </div>
+         
+        <div class="con1">
+            <a href="">Home</a>
+            <a href="login">Login</a>
+            <a href="register">Signup</a>
+        </div>
+    </div>
+    <div class="floating-logo">
+        <img src="{% static 'images/light_logo.png' %}" alt="Floating Logo">
+    </div>
+
+    <main>  <!-- Add this wrapper -->
+        <div class="content">
+            <section class="hero">
+                <h1>Manage Your <span class="auto-type">Finances Smarter</span></h1>
+            </section>
+        </div>
+        <p>
+            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Minima cum vel quaerat 
+            architecto tenetur rerum, voluptas doloremque explicabo eius provident delectus alias enim 
+            voluptatem, cumque asperiores! Quibusdam modi dolore vero accusamus iusto praesentium 
+            possimus quidem ipsa totam corrupti, eveniet sit, voluptate, nam cum optio harum ipsam 
+            laboriosam animi cupiditate. Ipsum quidem neque repellendus officiis blanditiis tempora 
+            rem, eum quasi aliquam nobis ipsa iste ullam libero incidunt dicta sit adipisci dolorem, 
+            facilis delectus earum numquam excepturi autem voluptas pariatur! Magnam, rerum quas, earum 
+            vero ducimus non a et qui sint id placeat asperiores illum fugiat assumenda iste sunt est 
+            aliquid magni inventore corporis, odio eos voluptate perspiciatis recusandae. Neque quaerat 
+            nesciunt eligendi culpa architecto necessitatibus, porro ducimus laudantium maiores quo? Vel
+            quod iusto sunt maiores iure minima cumque repudiandae a accusamus nostrum officia laborum 
+            autem, quo deserunt eos eum consectetur fugiat dignissimos at aperiam obcaecati tempore 
+            animi consequatur? Eos odit, officia quasi architecto velit provident eveniet. Quas illo 
+            quod porro est delectus dolorem consequuntur quisquam ipsam magnam vitae. Itaque, sapiente 
+            quaerat. Esse saepe vero laudantium dolore ad earum assumenda porro hic? Totam unde 
+            laboriosam vitae voluptates vel commodi, atque repellat nihil molestias saepe eveniet, 
+            pariatur corporis hic magnam blanditiis molestiae modi? Mollitia vero laudantium natus 
+            quae iure maxime praesentium tempore necessitatibus ex harum aliquam quisquam vel beatae 
+            eius nulla repudiandae amet, aspernatur deleniti cum non eum omnis fugiat iusto. Voluptate 
+            rerum modi quod in fugit quos non ullam voluptatum tempore possimus consectetur sit nisi 
+            neque impedit explicabo, ducimus architecto delectus corrupti exercitationem illo. Dicta 
+            ullam dolorum voluptatibus assumenda sequi ex quia nesciunt nihil quo. Molestiae 
+            reprehenderit nisi, doloremque pariatur hic, amet corrupti reiciendis mollitia nobis at rem
+            dicta quisquam laborum nostrum quia. Voluptas accusamus ducimus nostrum, quos voluptatum 
+            repudiandae modi aut harum odio molestias placeat dolor quidem repellat alias. Cupiditate 
+            asperiores molestiae dignissimos dicta rem dolorem aperiam aliquam in ab adipisci. Aperiam
+            officiis aspernatur voluptatibus repudiandae et praesentium saepe ullam explicabo, minus 
+            vel itaque dolorem amet eaque earum quas laborum laboriosam fugit? Praesentium enim 
+            nostrum quidem dignissimos cupiditate repudiandae libero amet voluptatibus consequuntur 
+            nisi recusandae magni eos architecto cum beatae vitae numquam sint commodi, rem corrupti 
+            inventore dicta? Deleniti asperiores impedit nisi quia odit aliquid distinctio tempora. 
+            Inventore alias, veritatis, omnis vel laboriosam sed libero minima doloremque maiores 
+            dolor esse facilis corporis quaerat quo enim quasi quod nam adipisci cum aspernatur quas 
+            consectetur dolorem sequi. Facilis repellat, neque similique inventore debitis quae totam. 
+            Pariatur quas accusantium aspernatur fugit et? Rem, facilis iure amet, labore consequuntur unde 
+            numquam animi laudantium praesentium aperiam necessitatibus enim dolores quos dolorum dicta exercitationem 
+            et eum voluptatibus. Provident esse beatae modi! Quidem ex a totam nihil culpa, natus animi sint mollitia? Cum
+            eligendi nostrum ut, rerum, dolor voluptatibus iusto neque impedit pariatur quae debitis, et minima animi
+            quisquam. Eveniet, amet magni vero et repellat maiores, est fuga veritatis corporis ullam ex! Eius libero amet 
+            aliquid cumque, eaque facere eveniet nam sunt labore dolorem? Sequi unde nobis fugiat dolorem atque et illo tempore 
+            obcaecati, maiores repellendus necessitatibus! Asperiores.
+        </p>
+    </main>
+
+    <footer style="background-color: black;">
+        <p>Contact</p>
+        <p style="background-color: black;">mail : support123@gmail.com</p>
+        <p style="background-color: black;">toll free contact : 100031024 | 100031025</p>
+        <p style="background-color: black;">&copy; 2025 Smart Budgeting App. All rights reserved.</p>
+        
+    </footer>
+
+    <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+
+    <script>
+        const floatingLogoImg = document.querySelector(".floating-logo img");
+        const body = document.querySelector("body");
+
+        function detectSystemTheme() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.setAttribute("data-theme", "dark");
+                floatingLogoImg.src = "{% static 'images/dark_logo.png' %}";
+            } else {
+                document.documentElement.setAttribute("data-theme", "light");
+                floatingLogoImg.src = "{% static 'images/light_logo.png' %}";
+            }
+        }
+        detectSystemTheme();
+
+        document.querySelector(".floating-logo").addEventListener("click", function() {
+            let currentTheme = document.documentElement.getAttribute("data-theme");
+            let newTheme = currentTheme === "light" ? "dark" : "light";
+            document.documentElement.setAttribute("data-theme", newTheme);
+            floatingLogoImg.src = newTheme === "light" ? "{% static 'images/light_logo.png' %}" : "{% static 'images/dark_logo.png' %}";
+
+            document.querySelector(".floating-logo").classList.add("animate-logo");
+
+            setTimeout(() => {
+                document.querySelector(".floating-logo").classList.remove("animate-logo");
+            }, 1000);
+        });
+
+
+        const floatingLogo = document.querySelector(".floating-logo");
+        let isDragging = false;
+        let offsetX, offsetY;
+        function startDrag(e) {
+            isDragging = true;
+            
+            // Get touch or mouse position
+            let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            let clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            offsetX = clientX - floatingLogo.getBoundingClientRect().left;
+            offsetY = clientY - floatingLogo.getBoundingClientRect().top;
+
+            floatingLogo.style.cursor = "grabbing";
+        }
+
+        function dragMove(e) {
+            if (!isDragging) return;
+            
+            let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            let clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            let x = clientX - offsetX;
+            let y = clientY - offsetY;
+
+            // Prevent going outside the window
+            const maxX = window.innerWidth - floatingLogo.offsetWidth;
+            const maxY = window.innerHeight - floatingLogo.offsetHeight;
+
+            x = Math.max(0, Math.min(x, maxX));
+            y = Math.max(0, Math.min(y, maxY));
+
+            // Since position is "fixed", update left and top
+            floatingLogo.style.left = x + "px";
+            floatingLogo.style.top = y + "px";
+        }
+
+        function stopDrag() {
+            isDragging = false;
+            floatingLogo.style.cursor = "grab";
+        }
+
+        // Mouse Events (for Desktop)
+        floatingLogo.addEventListener("mousedown", startDrag);
+        document.addEventListener("mousemove", dragMove);
+        document.addEventListener("mouseup", stopDrag);
+
+        // Touch Events (for Mobile)
+        floatingLogo.addEventListener("touchstart", startDrag);
+        document.addEventListener("touchmove", dragMove);
+        document.addEventListener("touchend", stopDrag);
+
+        var typed = new Typed(".auto-type",{
+            strings: ["Finances Smarter"],
+            typeSpeed: 150,
+            backSpeed: 150,
+            loop: true,
+        })
+
+    </script>
+</body>
+</html>
